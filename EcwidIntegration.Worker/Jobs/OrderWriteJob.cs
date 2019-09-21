@@ -4,7 +4,6 @@ using EcwidIntegration.GoogleSheets;
 using EcwidIntegration.Worker.CLI;
 using EcwidIntegration.Worker.Interfaces;
 using EcwidIntegration.Worker.Services;
-using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace EcwidIntegration.Worker.Jobs
 {
-    internal class OrderWriteJob : IJob
+    internal class OrderWriteJob
     {
         private readonly IWriter writer;
         private readonly IHandlerService handlerService;
@@ -74,44 +73,39 @@ namespace EcwidIntegration.Worker.Jobs
             handlerService = new HandlerService();
         }
 
-        public async Task Execute(IJobExecutionContext context)
+        public void Execute(RunOptions options)
         {
-            var data = context.MergedJobDataMap;
-            object options;
-            if (data.TryGetValue("Options", out options))
-            {
-                var dataOptions = options as RunOptions;
-                var ecwidService = new EcwidService(dataOptions.StoreId, dataOptions.EcwidAPI);
-                var googleSheetService = new GoogleSheetsService(dataOptions.SpreadSheet);
 
-                try
+            var ecwidService = new EcwidService(options.StoreId, options.EcwidAPI);
+            var googleSheetService = new GoogleSheetsService(options.SpreadSheet);
+
+            try
+            {
+                var gsheetOrders = googleSheetService.GetOrdersNumbers(options.TabId);
+                var ecwidOrders = ecwidService.GetPaidNotShippedOrdersAsyncWithCondition(o =>
                 {
-                    var gsheetOrders = googleSheetService.GetOrdersNumbers(dataOptions.TabId);
-                    var ecwidOrders = await ecwidService.GetPaidNotShippedOrdersAsyncWithCondition(o =>
+                    return !gsheetOrders.Contains(o.OrderNumber);
+                }).Result;
+                if (ecwidOrders.Any())
+                {
+                    writer.Write($"Новые заказы для записи! {ecwidOrders.Count}");
+                    foreach (var order in ecwidOrders.OrderBy(o => o.CreateDate))
                     {
-                        return !gsheetOrders.Contains(o.OrderNumber);
-                    });
-                    if (ecwidOrders.Any())
-                    {
-                        writer.Write($"Новые заказы для записи! ${ecwidOrders.Count}");
-                        foreach (var order in ecwidOrders.OrderBy(o => o.CreateDate))
+                        handlerService.Handle<OrderDTO>(order);
+                        try
                         {
-                            handlerService.Handle<OrderDTO>(order);
-                            try
-                            {
-                                googleSheetService.Write(dataOptions.TabId, GetOrders(order), dataOptions.BeginColumn);
-                            }
-                            catch (Exception e)
-                            {
-                                writer.Write(e.Message);
-                            }
+                            googleSheetService.Write(options.TabId, GetOrders(order), options.BeginColumn);
+                        }
+                        catch (Exception e)
+                        {
+                            writer.Write(e.Message);
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    writer.Write(e.Message);
-                }
+            }
+            catch (Exception e)
+            {
+                writer.Write(e.Message);
             }
         }
     }

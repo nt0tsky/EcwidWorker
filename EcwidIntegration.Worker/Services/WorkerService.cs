@@ -8,8 +8,6 @@ using EcwidIntegration.Worker.Interfaces;
 using EcwidIntegration.Worker.Jobs;
 using Newtonsoft.Json;
 using PowerArgs;
-using Quartz;
-using Quartz.Impl;
 
 namespace EcwidIntegration.Worker.Services
 {
@@ -28,27 +26,13 @@ namespace EcwidIntegration.Worker.Services
         public async void Run(RunOptions options)
         {
             writer.Write(Message.Method.Run);
+            var job = new OrderWriteJob();
+            while(true)
+            {
+                job.Execute(options);
 
-            var scheduler = await StdSchedulerFactory.GetDefaultScheduler();
-            await scheduler.Start();
-
-            var job = JobBuilder.Create<OrderWriteJob>().Build();
-
-            var trigger = TriggerBuilder.Create()                   // создаем триггер
-                .WithIdentity("trigger1", "group1")                 // идентифицируем триггер с именем и группой
-                .UsingJobData(new JobDataMap
-                {
-                    { "Options", options }
-                })
-                .StartNow()                                         // запуск сразу после начала выполнения
-                .WithSimpleSchedule(x => x                          // настраиваем выполнение действия
-                    .WithIntervalInMinutes(options.Interval)        // через 1 минуту
-                    .RepeatForever())                               // бесконечное повторение
-                .Build();
-
-            await scheduler.ScheduleJob(job, trigger);              // начинаем выполнение работы
-
-            Thread.Sleep(Timeout.Infinite);
+                Thread.Sleep(options.Interval);
+            }
         }
 
         public void GetEcwidOrders(EcwidOptions options)

@@ -47,10 +47,19 @@ namespace EcwidIntegration.Ecwid
         /// <returns>Список заказов</returns>
         public async Task<IList<OrderDTO>> GetPaidNotShippedOrdersAsync()
         {
-            var result = new List<OrderDTO>();
-            var orders = await this.ecwidClient.GetPaidNotShippedOrdersAsync();
-            result = orders.Select(i => orderHelper.CreateOrderDTO(i)).ToList();
-            return result;
+            try
+            {
+                var result = new List<OrderDTO>();
+                var orders = await this.ecwidClient.GetPaidNotShippedOrdersAsync();
+                result = orders.Select(i => orderHelper.CreateOrderDTO(i)).ToList();
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return null;
         }
 
         /// <summary>

@@ -29,7 +29,7 @@ namespace EcwidIntegration.Worker.Services
         {
             writer.Write("Инициализация контейнера");
             var items = assemblyService.LoadCommon();
-            writer.Write($"Количество элементов для регистрации ${items.Count}");
+            writer.Write($"Количество элементов для регистрации {items.Count}");
             var serviceProvider = new ServiceCollection();
             foreach (var item in items)
             {
