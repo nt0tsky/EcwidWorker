@@ -93,6 +93,7 @@ namespace EcwidIntegration.Worker.Jobs
                     });
                     if (ecwidOrders.Any())
                     {
+                        writer.Write($"Новые заказы для записи! ${ecwidOrders.Count}");
                         foreach (var order in ecwidOrders.OrderBy(o => o.CreateDate))
                         {
                             handlerService.Handle<OrderDTO>(order);

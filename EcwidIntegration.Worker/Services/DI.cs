@@ -1,4 +1,5 @@
 ﻿using EcwidIntegration.Common.Services;
+using EcwidIntegration.Worker.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using PowerArgs;
 
@@ -12,6 +13,11 @@ namespace EcwidIntegration.Worker.Services
         private static readonly AssemblyService assemblyService = new AssemblyService();
 
         /// <summary>
+        /// Логгер
+        /// </summary>
+        private static readonly IWriter writer = new ConsoleWriter();
+
+        /// <summary>
         /// Инстанс контейнера
         /// </summary>
         private static ServiceProvider container;
@@ -21,7 +27,9 @@ namespace EcwidIntegration.Worker.Services
         /// </summary>
         private static void InitContainer()
         {
+            writer.Write("Инициализация контейнера");
             var items = assemblyService.LoadCommon();
+            writer.Write($"Количество элементов для регистрации ${items.Count}");
             var serviceProvider = new ServiceCollection();
             foreach (var item in items)
             {
@@ -31,6 +39,8 @@ namespace EcwidIntegration.Worker.Services
                 });
             }
             container = serviceProvider.BuildServiceProvider();
+
+            writer.Write("Регистрация окончена");
         }
 
         /// <summary>
