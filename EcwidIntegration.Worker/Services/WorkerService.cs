@@ -27,11 +27,13 @@ namespace EcwidIntegration.Worker.Services
         {
             writer.Write(Message.Method.Run);
             var job = new OrderWriteJob();
+            writer.Write("Инициализация job'a завершена");
             while(true)
             {
+                writer.Write("Итерация получения данных..");
                 job.Execute(options);
 
-                Thread.Sleep(options.Interval);
+                Thread.Sleep(options.Interval * 60000);
             }
         }
 

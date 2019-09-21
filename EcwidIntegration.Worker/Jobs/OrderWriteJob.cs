@@ -4,6 +4,7 @@ using EcwidIntegration.GoogleSheets;
 using EcwidIntegration.Worker.CLI;
 using EcwidIntegration.Worker.Interfaces;
 using EcwidIntegration.Worker.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,17 +76,21 @@ namespace EcwidIntegration.Worker.Jobs
 
         public void Execute(RunOptions options)
         {
-
+            writer.Write(JsonConvert.SerializeObject(options));
+            writer.Write($"Точка входа в тело метода Execute");
             var ecwidService = new EcwidService(options.StoreId, options.EcwidAPI);
+            writer.Write("Сервис Ecwid проинициализирован успешно!");
             var googleSheetService = new GoogleSheetsService(options.SpreadSheet);
-
+            writer.Write("Инициализация сервисов завершена");
             try
             {
                 var gsheetOrders = googleSheetService.GetOrdersNumbers(options.TabId);
+                writer.Write("Получили список заказов с GoogleSheet");
                 var ecwidOrders = ecwidService.GetPaidNotShippedOrdersAsyncWithCondition(o =>
                 {
                     return !gsheetOrders.Contains(o.OrderNumber);
                 }).Result;
+                writer.Write("Получили список заказов с Ecwid");
                 if (ecwidOrders.Any())
                 {
                     writer.Write($"Новые заказы для записи! {ecwidOrders.Count}");
