@@ -1,4 +1,6 @@
-﻿using EcwidIntegration.Common.Interfaces;
+﻿using System.Collections.Generic;
+using System.Linq;
+using EcwidIntegration.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EcwidIntegration.Common.Services
@@ -37,7 +39,14 @@ namespace EcwidIntegration.Common.Services
                 }
             }
             container = serviceProvider.BuildServiceProvider();
-
+            var onBuildClasses = container.GetService<IEnumerable<IOnBuild>>();
+            if (onBuildClasses.Any())
+            {
+                foreach(var item in onBuildClasses)
+                {
+                    item.OnBuild(container);
+                }
+            }
             writer.Write("Регистрация окончена");
         }
 

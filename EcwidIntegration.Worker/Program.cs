@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using EcwidIntegration.Common.Services;
 using EcwidIntegration.Worker.Interfaces;
 using EcwidIntegration.Worker.Services;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 
 namespace EcwidIntegration.Worker
 {

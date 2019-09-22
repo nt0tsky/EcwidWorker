@@ -84,6 +84,7 @@ namespace EcwidIntegration.Common.Services
         /// <returns>Список сборок</returns>
         public IEnumerable<Assembly> GetAssemblies()
         {
+            Console.WriteLine($"Директория с DLL-ками {WorkingDirectory}");
             return Directory.GetFiles(WorkingDirectory, "*.dll").Select(p => Assembly.LoadFrom(p));
         }
 

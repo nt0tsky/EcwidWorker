@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EcwidIntegration.DAL.Models
 {
-    internal class Order
+    public class Order
     {
         /// <summary>
         /// Id

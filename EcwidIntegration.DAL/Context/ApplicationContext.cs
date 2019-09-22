@@ -15,7 +15,7 @@ namespace EcwidIntegration.DAL.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=orders;Username=postgres;Password=4ewernahz0R");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=orders;Username=postgres;Password=postgres");
         }
     }
 }

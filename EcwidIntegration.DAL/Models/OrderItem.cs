@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EcwidIntegration.DAL.Models
 {
-    internal class OrderItem
+    public class OrderItem
     {
         public Guid Id { get; set; }
 

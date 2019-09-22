@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EcwidIntegration.DAL.Models
 {
-    internal class OrderItemOption
+    public class OrderItemOption
     {
         public Guid Id { get; set; }
 
