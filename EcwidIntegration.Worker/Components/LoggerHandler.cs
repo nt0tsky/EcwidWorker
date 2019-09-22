@@ -4,7 +4,7 @@ namespace EcwidIntegration.Worker.Components
 {
     class LoggerHandler : IEventHandler
     {
-        public void Handle(object args)
+        public void Handle(string args)
         {
             // todo
         }

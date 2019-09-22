@@ -1,6 +1,6 @@
-﻿namespace EcwidIntegration.Worker.Interfaces
+﻿namespace EcwidIntegration.Common.Interfaces
 {
-    internal interface IWriter
+    public interface IWriter
     {
         /// <summary>
         /// Записать

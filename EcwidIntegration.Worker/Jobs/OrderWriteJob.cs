@@ -1,15 +1,15 @@
-﻿using EcwidIntegration.Ecwid;
+﻿using EcwidIntegration.Common.Interfaces;
+using EcwidIntegration.Common.Services;
+using EcwidIntegration.Ecwid;
 using EcwidIntegration.Ecwid.Models;
 using EcwidIntegration.GoogleSheets;
 using EcwidIntegration.Worker.CLI;
 using EcwidIntegration.Worker.Interfaces;
 using EcwidIntegration.Worker.Services;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace EcwidIntegration.Worker.Jobs
 {
@@ -76,8 +76,6 @@ namespace EcwidIntegration.Worker.Jobs
 
         public void Execute(RunOptions options)
         {
-            writer.Write(JsonConvert.SerializeObject(options));
-            writer.Write($"Точка входа в тело метода Execute");
             var ecwidService = new EcwidService(options.StoreId, options.EcwidAPI);
             writer.Write("Сервис Ecwid проинициализирован успешно!");
             var googleSheetService = new GoogleSheetsService(options.SpreadSheet);

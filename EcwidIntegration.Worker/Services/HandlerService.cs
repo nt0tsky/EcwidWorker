@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using EcwidIntegration.Common.Interfaces;
+using EcwidIntegration.Common.Services;
 using EcwidIntegration.Worker.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace EcwidIntegration.Worker.Services
 {
@@ -15,7 +17,7 @@ namespace EcwidIntegration.Worker.Services
             {
                 foreach (var handler in handlers)
                 {
-                    handler.Handle(order);
+                    handler.Handle(JsonConvert.SerializeObject(order));
                 }
             }
         }

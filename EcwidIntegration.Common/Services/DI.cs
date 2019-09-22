@@ -1,11 +1,9 @@
-﻿using EcwidIntegration.Common.Services;
-using EcwidIntegration.Worker.Interfaces;
+﻿using EcwidIntegration.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using PowerArgs;
 
-namespace EcwidIntegration.Worker.Services
+namespace EcwidIntegration.Common.Services
 {
-    internal static class DI
+    public static class DI
     {
         /// <summary>
         /// Сервис работы со сборками
@@ -25,7 +23,7 @@ namespace EcwidIntegration.Worker.Services
         /// <summary>
         /// Инициализация контейнера
         /// </summary>
-        private static void InitContainer()
+        public static void InitContainer()
         {
             writer.Write("Инициализация контейнера");
             var items = assemblyService.LoadCommon();
@@ -33,10 +31,10 @@ namespace EcwidIntegration.Worker.Services
             var serviceProvider = new ServiceCollection();
             foreach (var item in items)
             {
-                item.Implementations.ForEach(i =>
+                foreach (var impl in item.Implementations)
                 {
-                    serviceProvider.AddTransient(item.Interface, i);
-                });
+                    serviceProvider.AddTransient(item.Interface, impl);
+                }
             }
             container = serviceProvider.BuildServiceProvider();
 
@@ -46,17 +44,6 @@ namespace EcwidIntegration.Worker.Services
         /// <summary>
         /// Контейнер
         /// </summary>
-        public static ServiceProvider Container
-        {
-            get
-            {
-                if (container == null)
-                {
-                    InitContainer();
-                }
-
-                return container;
-            }
-        }
+        public static ServiceProvider Container { get { return container; } }
     }
 }

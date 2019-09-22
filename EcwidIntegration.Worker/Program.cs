@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using EcwidIntegration.Common.Services;
 using EcwidIntegration.Worker.Interfaces;
 using EcwidIntegration.Worker.Services;
 
@@ -11,6 +12,7 @@ namespace EcwidIntegration.Worker
         {
             Task.Run(() =>
             {
+                DI.InitContainer();
                 IWorker worker = new WorkerService();
                 worker.Start(args);
             });

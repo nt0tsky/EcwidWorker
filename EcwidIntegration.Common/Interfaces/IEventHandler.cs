@@ -6,6 +6,6 @@ namespace EcwidIntegration.Common.Interfaces
     [Common]
     public interface IEventHandler
     {
-        void Handle(object args);
+        void Handle(string data);
     }
 }

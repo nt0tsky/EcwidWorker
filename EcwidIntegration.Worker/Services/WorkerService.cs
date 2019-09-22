@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using EcwidIntegration.Common.Interfaces;
+using EcwidIntegration.Common.Services;
 using EcwidIntegration.Ecwid;
 using EcwidIntegration.Worker.CLI;
 using EcwidIntegration.Worker.Constants;
@@ -23,7 +24,7 @@ namespace EcwidIntegration.Worker.Services
             Args.InvokeAction<WorkerActions>(args);
         }
 
-        public async void Run(RunOptions options)
+        public void Run(RunOptions options)
         {
             writer.Write(Message.Method.Run);
             var job = new OrderWriteJob();
