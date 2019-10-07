@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29306.81
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcwidIntegration.Ecwid", "EcwidIntegration.Ecwid\EcwidIntegration.Ecwid.csproj", "{30CFE707-7681-4103-961C-D2778C59B9CB}"
 EndProject
@@ -12,8 +12,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcwidIntegration.Worker", "EcwidIntegration.Worker\EcwidIntegration.Worker.csproj", "{9B5F62F4-FDC8-4960-97C3-8FA9C0C0E49A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcwidIntegration.Common", "EcwidIntegration.Common\EcwidIntegration.Common.csproj", "{3B14B5F0-B287-4B7A-8ED7-5105220411DA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcwidIntegration.DAL", "EcwidIntegration.DAL\EcwidIntegration.DAL.csproj", "{6308DE54-32A2-4E45-AC14-0F8388A73DAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +39,6 @@ Global
 		{3B14B5F0-B287-4B7A-8ED7-5105220411DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B14B5F0-B287-4B7A-8ED7-5105220411DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B14B5F0-B287-4B7A-8ED7-5105220411DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6308DE54-32A2-4E45-AC14-0F8388A73DAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6308DE54-32A2-4E45-AC14-0F8388A73DAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6308DE54-32A2-4E45-AC14-0F8388A73DAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6308DE54-32A2-4E45-AC14-0F8388A73DAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

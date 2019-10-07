@@ -23,6 +23,7 @@ namespace EcwidIntegration.Ecwid
                 Total = order.Total,
                 OrderNumber = order.OrderNumber,
                 CreateDate = order.CreateDate,
+                OrderComments = order.OrderComments,
                 Items = order.Items.Select(i => CreateOrderItemDTO(i)).ToList()
             };
         }
@@ -34,16 +35,21 @@ namespace EcwidIntegration.Ecwid
         /// <returns>DTO</returns>
         public OrderItemDTO CreateOrderItemDTO(OrderItem orderItem)
         {
-            return new OrderItemDTO
+            var item = new OrderItemDTO
             {
                 Name = orderItem.Name,
-                Quantity = orderItem.Quantity,
-                Options = orderItem.SelectedOptions.Select(op => new OrderItemOptionDTO
+                Quantity = orderItem.Quantity
+            };
+            if (orderItem.SelectedOptions != null)
+            {
+                item.Options = orderItem.SelectedOptions.Select(op => new OrderItemOptionDTO
                 {
                     Name = op.Name,
                     Value = op.Value
-                }).ToList()
-            };
+                }).ToList();
+            }
+
+            return item;
         }
     }
 }
