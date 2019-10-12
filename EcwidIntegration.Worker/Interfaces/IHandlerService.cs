@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using EcwidIntegration.Common.Attributes;
 
 namespace EcwidIntegration.Worker.Interfaces
 {
+    [ExtensionPoint]
     internal interface IHandlerService
     {
         void Handle<T>(T order);

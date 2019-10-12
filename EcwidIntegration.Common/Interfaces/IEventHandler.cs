@@ -3,7 +3,7 @@ using EcwidIntegration.Common.Events;
 
 namespace EcwidIntegration.Common.Interfaces
 {
-    [Common]
+    [ExtensionPoint]
     public interface IEventHandler
     {
         void Handle(string data);

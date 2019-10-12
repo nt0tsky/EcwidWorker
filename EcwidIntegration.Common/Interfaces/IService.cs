@@ -6,7 +6,7 @@ namespace EcwidIntegration.Common.Interfaces
     /// <summary>
     /// Интерфейс сервиса
     /// </summary>
-    [Common]
+    [ExtensionPoint]
     public interface IService
     {
         /// <summary>

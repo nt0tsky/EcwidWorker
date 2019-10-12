@@ -1,11 +1,11 @@
-﻿using EcwidIntegration.Common.Interfaces;
+﻿using EcwidIntegration.Common.Attributes;
+using EcwidIntegration.Common.Interfaces;
 using EcwidIntegration.Common.Services;
 using EcwidIntegration.Ecwid;
 using EcwidIntegration.Ecwid.Models;
 using EcwidIntegration.GoogleSheets;
 using EcwidIntegration.Worker.CLI;
 using EcwidIntegration.Worker.Interfaces;
-using EcwidIntegration.Worker.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +13,13 @@ using System.Text;
 
 namespace EcwidIntegration.Worker.Jobs
 {
-    internal class OrderWriteJob
+    [Service]
+    internal class OrderWriteJob : IWriteJob, IService
     {
         private readonly IWriter writer;
         private readonly IHandlerService handlerService;
+
+        public Guid Uid => Guid.NewGuid();
 
         /// <summary>
         /// Получить информацию для записи
@@ -68,10 +71,10 @@ namespace EcwidIntegration.Worker.Jobs
         /// <summary>
         /// Ctor
         /// </summary>
-        public OrderWriteJob()
+        public OrderWriteJob(IHandlerService handlerService)
         {
             writer = new ConsoleWriter();
-            handlerService = new HandlerService();
+            this.handlerService = handlerService;
         }
 
         public void Execute(RunOptions options)

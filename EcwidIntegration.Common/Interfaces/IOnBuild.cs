@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EcwidIntegration.Common.Interfaces
 {
-    [Common]
+    [ExtensionPoint]
     public interface IOnBuild
     {
         void OnBuild(ServiceProvider container);

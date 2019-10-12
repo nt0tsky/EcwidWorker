@@ -8,9 +8,9 @@ namespace EcwidIntegration.Common.Extensions
 {
     public static class TypeExtension
     {
-        public static bool IsCommon(this Type type)
+        public static bool HasAttributeTypeOf<T>(this Type type)
         {
-            return type.GetCustomAttributes(true).Any(t => t.GetType() == typeof(CommonAttribute));
+            return type.GetCustomAttributes(true).Any(t => t.GetType() == typeof(T));
         }
     }
 }

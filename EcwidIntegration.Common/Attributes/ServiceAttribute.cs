@@ -4,7 +4,8 @@ using System.Text;
 
 namespace EcwidIntegration.Common.Attributes
 {
-    public class CommonAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ServiceAttribute : Attribute
     {
     }
 }

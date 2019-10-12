@@ -1,4 +1,5 @@
-﻿using EcwidIntegration.Worker.CLI;
+﻿using EcwidIntegration.Common.Services;
+using EcwidIntegration.Worker.CLI;
 using EcwidIntegration.Worker.Interfaces;
 using EcwidIntegration.Worker.Services;
 using PowerArgs;
@@ -11,7 +12,7 @@ namespace EcwidIntegration.Worker
     [ArgExceptionBehavior(ArgExceptionPolicy.StandardExceptionHandling)]
     internal class WorkerActions : IWorkerActions
     {
-        private readonly IWorkerService workerService = new WorkerService();
+        private readonly IWorkerService workerService = new EcwidServiceCollection().GetService<IWorkerService>();
 
         [HelpHook, ArgShortcut("--?"), ArgDescription("Отобразить справку")]
         public bool Help { get; set; }

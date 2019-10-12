@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using EcwidIntegration.Common.Attributes;
 using EcwidIntegration.Common.Extensions;
 using EcwidIntegration.Common.Interfaces;
 using EcwidIntegration.Common.Models;
@@ -11,6 +12,8 @@ namespace EcwidIntegration.Common.Services
 {
     public class AssemblyService
     {
+        private IList<IRegistrableType> RegistrableTypes { get; set; }
+
         private readonly IWriter writer;
         private readonly AssemblyListener assemblyListener;
         private IList<RegisterItem> assemblyItems;
@@ -41,11 +44,11 @@ namespace EcwidIntegration.Common.Services
         /// </summary>
         /// <param name="type">Тип</param>
         /// <returns>Успех</returns>
-        protected bool IsCommonType(Type type)
+        protected bool IsComponentType(Type type)
         {
             if (!type.IsInterface)
             {
-                return type.GetInterfaces().Any(i => i.IsCommon());
+                return type.GetInterfaces().Any(i => i.HasAttributeTypeOf<ComponentAttribute>());
             }
 
             return false;
@@ -58,27 +61,32 @@ namespace EcwidIntegration.Common.Services
         /// <param name="assembly"Сборка</param>
         protected void AppendItems(IList<RegisterItem> items, Assembly assembly)
         {
-            foreach (var type in assembly.GetTypes().Where(t => IsCommonType(t)))
+            foreach (var type in assembly.GetTypes().Where(t => RegistrableTypes.Any(i => i.IsRegister(t))))
             {
-                var commonIfaces = type.GetInterfaces().Where(i => i.IsCommon());
-                foreach (var ci in commonIfaces)
-                {
-                    var ri = items.FirstOrDefault(i => ci == i.Interface);
-                    if (ri != null)
-                    {
-                        ri.Implementations.Add(type);
-                    }
-                    else
-                    {
-                        var item = new RegisterItem
-                        {
-                            Interface = ci
-                        };
-                        item.Implementations.Add(type);
-                        items.Add(item);
-                    }
-                }
+                var regType = RegistrableTypes.FirstOrDefault(i => i.IsRegister(type));
+                regType.Register(items, type);
             }
+        }
+
+        protected void BeforeAppendItems(IEnumerable<Assembly> assemblies)
+        {
+            var types = assemblies.SelectMany(i =>
+            {
+                return i.GetTypes().Where(t =>
+                {
+                    return t.IsClass && t.HasAttributeTypeOf<ComponentAttribute>();
+                });
+            }).Where(t =>
+            {
+                return t.GetInterfaces().Any(i => i == typeof(IRegistrableType));
+            });
+
+            RegistrableTypes = types.Select(i => Activator.CreateInstance(i) as IRegistrableType).ToList();
+        }
+
+        protected void AfterAppendItems(IEnumerable<Assembly> assemblies)
+        {
+            //todo
         }
 
         /// <summary>
@@ -90,11 +98,13 @@ namespace EcwidIntegration.Common.Services
             if (!initialized)
             {
                 assemblyItems = new List<RegisterItem>();
-
-                foreach (var assembly in assemblyListener.GetAssemblies())
+                var assemblies = assemblyListener.GetAssemblies();
+                BeforeAppendItems(assemblies);
+                foreach (var assembly in assemblies)
                 {
                     AppendItems(assemblyItems, assembly);
                 }
+                AfterAppendItems(assemblies);
             }
 
             return assemblyItems;

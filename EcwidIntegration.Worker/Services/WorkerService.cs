@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using EcwidIntegration.Common.Attributes;
 using EcwidIntegration.Common.Interfaces;
 using EcwidIntegration.Common.Services;
 using EcwidIntegration.Ecwid;
@@ -12,12 +13,19 @@ using PowerArgs;
 
 namespace EcwidIntegration.Worker.Services
 {
+    [Service]
     internal class WorkerService : IWorkerService, IService, IWorker
     {
         private readonly IWriter writer = new ConsoleWriter();
+        private readonly IWriteJob writeJob;
 
         /// <inhertidoc />
         public Guid Uid => new Guid("{355B8006-8CDB-48E5-99D0-1643A6A9036C}");
+
+        public WorkerService(IWriteJob writeJob)
+        {
+            this.writeJob = writeJob;
+        }
 
         public void Start(string[] args)
         {
@@ -27,12 +35,11 @@ namespace EcwidIntegration.Worker.Services
         public void Run(RunOptions options)
         {
             writer.Write(Message.Method.Run);
-            var job = new OrderWriteJob();
             writer.Write("Инициализация job'a завершена");
             while(true)
             {
                 writer.Write("Итерация получения данных..");
-                job.Execute(options);
+                writeJob.Execute(options);
 
                 Thread.Sleep(options.Interval * 60000);
             }
