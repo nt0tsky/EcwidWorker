@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using EcwidIntegration.Common.Attributes;
-using EcwidIntegration.Common.Interfaces;
-using EcwidIntegration.Common.Services;
+using EcwidIntegration.Common.ExtensionPoints;
 using EcwidIntegration.Worker.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace EcwidIntegration.Worker.Services

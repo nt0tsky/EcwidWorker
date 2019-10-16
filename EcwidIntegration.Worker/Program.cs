@@ -18,7 +18,7 @@ namespace EcwidIntegration.Worker
         /// <returns>контейнер зависимостей</returns>
         static IEcwidServiceCollection GetServiceCollection()
         {
-            return new EcwidServiceCollection();
+            return new EcwidServiceCollection(new EcwidServiceCollectionBase());
         }
 
         static void Main(string[] args)
@@ -26,6 +26,7 @@ namespace EcwidIntegration.Worker
             Task.Run(() =>
             {
                 var eService = GetServiceCollection();
+                eService.Init();
                 var worker = eService.GetService<IWorker>();
                 
                 worker.Start(args);

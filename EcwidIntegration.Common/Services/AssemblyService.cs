@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using EcwidIntegration.Common.Attributes;
 using EcwidIntegration.Common.Extensions;
 using EcwidIntegration.Common.Interfaces;
+using EcwidIntegration.Common.ExtensionPoints;
 using EcwidIntegration.Common.Models;
 
 namespace EcwidIntegration.Common.Services
 {
     public class AssemblyService
     {
-        private IList<IRegistrableType> RegistrableTypes { get; set; }
+        private IList<IRegisterProvider> RegisterProviders { get; set; }
 
         private readonly IWriter writer;
         private readonly AssemblyListener assemblyListener;
@@ -40,53 +40,49 @@ namespace EcwidIntegration.Common.Services
         }
 
         /// <summary>
-        /// Общий тип
-        /// </summary>
-        /// <param name="type">Тип</param>
-        /// <returns>Успех</returns>
-        protected bool IsComponentType(Type type)
-        {
-            if (!type.IsInterface)
-            {
-                return type.GetInterfaces().Any(i => i.HasAttributeTypeOf<ComponentAttribute>());
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Добавить элементы
         /// </summary>
         /// <param name="items">Элементы</param>
         /// <param name="assembly"Сборка</param>
-        protected void AppendItems(IList<RegisterItem> items, Assembly assembly)
+        protected void AppendItems(IList<RegisterItem> items, Type type)
         {
-            foreach (var type in assembly.GetTypes().Where(t => RegistrableTypes.Any(i => i.IsRegister(t))))
+            var provider = RegisterProviders.FirstOrDefault(i => i.IsRegister(type));
+            if (provider != null)
             {
-                var regType = RegistrableTypes.FirstOrDefault(i => i.IsRegister(type));
-                regType.Register(items, type);
+                provider.Register(items, type);
             }
         }
 
-        protected void BeforeAppendItems(IEnumerable<Assembly> assemblies)
+        protected void BeforeAppendItems(IEnumerable<Type> assemblies)
         {
-            var types = assemblies.SelectMany(i =>
-            {
-                return i.GetTypes().Where(t =>
-                {
-                    return t.IsClass && t.HasAttributeTypeOf<ComponentAttribute>();
-                });
-            }).Where(t =>
-            {
-                return t.GetInterfaces().Any(i => i == typeof(IRegistrableType));
-            });
-
-            RegistrableTypes = types.Select(i => Activator.CreateInstance(i) as IRegistrableType).ToList();
+            RegisterProviders = assemblies.Where(i => i.HasAttributeTypeOf<ComponentAttribute>()
+                                    && typeof(IRegisterProvider).IsAssignableFrom(i)).Select(type =>
+                                    {
+                                        return Activator.CreateInstance(type) as IRegisterProvider;
+                                    }).ToList();
         }
 
         protected void AfterAppendItems(IEnumerable<Assembly> assemblies)
         {
             //todo
+        }
+
+        /// <summary>
+        /// Получить список типов для регистрации
+        /// </summary>
+        /// <param name="assemblies">Сборки</param>
+        /// <returns>Список сборок</returns>
+        protected IEnumerable<Type> GetCommonTypes(IEnumerable<Assembly> assemblies)
+        {
+            return assemblies.SelectMany(i =>
+            {
+                return i.GetTypes().Where(t =>
+                {
+                    return t.HasAttributeTypeOf<ComponentAttribute>()
+                           || t.HasAttributeTypeOf<ExtensionPointAttribute>()
+                           || t.HasAttributeTypeOf<ServiceAttribute>();
+                });
+            });
         }
 
         /// <summary>
@@ -99,15 +95,16 @@ namespace EcwidIntegration.Common.Services
             {
                 assemblyItems = new List<RegisterItem>();
                 var assemblies = assemblyListener.GetAssemblies();
-                BeforeAppendItems(assemblies);
-                foreach (var assembly in assemblies)
+                var types = GetCommonTypes(assemblies);
+                BeforeAppendItems(types);
+                foreach (var type in types)
                 {
-                    AppendItems(assemblyItems, assembly);
+                    AppendItems(assemblyItems, type);
                 }
                 AfterAppendItems(assemblies);
             }
 
-            return assemblyItems;
+            return assemblyItems.Where(i => i.Implementations.Any()).ToList();
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using EcwidIntegration.Common.Attributes;
-using EcwidIntegration.Common.Events;
 
-namespace EcwidIntegration.Common.Interfaces
+namespace EcwidIntegration.Common.ExtensionPoints
 {
     [ExtensionPoint]
     public interface IEventHandler

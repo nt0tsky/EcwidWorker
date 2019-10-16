@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using EcwidIntegration.Common.Attributes;
 using EcwidIntegration.Common.Models;
 
-namespace EcwidIntegration.Common.Interfaces
+namespace EcwidIntegration.Common.ExtensionPoints
 {
     /// <summary>
     /// Точка расширения для добавления типов регистрации
     /// </summary>
     [ExtensionPoint]
-    public interface IRegistrableType
+    public interface IRegisterProvider
     {
         /// <summary>
         /// Можно ли зарегать в контейнере

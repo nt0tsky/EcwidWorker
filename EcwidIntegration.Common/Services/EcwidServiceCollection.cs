@@ -3,6 +3,7 @@ using System.Linq;
 using EcwidIntegration.Common.Attributes;
 using EcwidIntegration.Common.Extensions;
 using EcwidIntegration.Common.Interfaces;
+using EcwidIntegration.Common.ExtensionPoints;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EcwidIntegration.Common.Services
@@ -26,51 +27,38 @@ namespace EcwidIntegration.Common.Services
         private readonly IWriter writer = new ConsoleWriter();
 
         /// <summary>
+        /// Указатель на реализацию
+        /// </summary>
+        private readonly IEcwidServiceCollectionImpl ecwidServiceCollectionImpl;
+
+        /// <summary>
         /// Ctor
         /// </summary>
-        public EcwidServiceCollection()
+        public EcwidServiceCollection(IEcwidServiceCollectionImpl ecwidServiceCollectionImpl)
         {
-            InitContainer();
+            this.ecwidServiceCollectionImpl = ecwidServiceCollectionImpl;
         }
 
         /// <summary>
         /// Инициализация контейнера
         /// </summary>
-        private void InitContainer()
+        public void Init()
         {
-            if (Container != null)
-            {
-                return;
-            }
-
-            writer.Write("Инициализация контейнера");
-            var items = assemblyService.LoadCommon();
-            writer.Write($"Количество элементов для регистрации {items.Count}");
             var serviceProvider = new ServiceCollection();
-            foreach (var item in items)
-            {
-                foreach (var impl in item.Implementations)
-                {
-                    if (impl.HasAttributeTypeOf<ServiceAttribute>())
-                    {
-                        serviceProvider.AddSingleton(item.Interface, impl);
-                    }
-                    else
-                    {
-                        serviceProvider.AddTransient(item.Interface, impl);
-                    }
-                }
-            }
+            var items = assemblyService.LoadCommon();
+
+            ecwidServiceCollectionImpl.Register(serviceProvider, items);
+
             Container = serviceProvider.BuildServiceProvider();
-            var onBuildClasses = Container.GetService<IEnumerable<IOnBuild>>();
-            if (onBuildClasses.Any())
+
+            var onBuild = Container.GetService<IEnumerable<IOnBuild>>();
+            if (onBuild.Any())
             {
-                foreach(var item in onBuildClasses)
+                foreach(var item in onBuild)
                 {
                     item.OnBuild(Container);
                 }
             }
-            writer.Write("Регистрация окончена");
         }
 
         /// <summary>

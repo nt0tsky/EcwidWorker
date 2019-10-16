@@ -18,6 +18,9 @@ namespace EcwidIntegration.Common.Models
         /// </summary>
         public IList<Type> Implementations { get; set; }
 
+        /// <summary>
+        /// Ctor
+        /// </summary>
         public RegisterItem()
         {
             Implementations = new List<Type>();

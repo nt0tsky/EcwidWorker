@@ -1,7 +1,7 @@
 ﻿using EcwidIntegration.Common.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EcwidIntegration.Common.Interfaces
+namespace EcwidIntegration.Common.ExtensionPoints
 {
     [ExtensionPoint]
     public interface IOnBuild

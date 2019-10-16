@@ -1,10 +1,10 @@
 ﻿using System;
 using EcwidIntegration.Common.Attributes;
 
-namespace EcwidIntegration.Common.Interfaces
+namespace EcwidIntegration.Common.ExtensionPoints
 {
     /// <summary>
-    /// Интерфейс сервиса
+    /// Интерфейс расширяемых сервисов
     /// </summary>
     [ExtensionPoint]
     public interface IService

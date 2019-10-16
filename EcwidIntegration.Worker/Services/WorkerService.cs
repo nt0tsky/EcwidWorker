@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using EcwidIntegration.Common.Attributes;
+using EcwidIntegration.Common.ExtensionPoints;
 using EcwidIntegration.Common.Interfaces;
 using EcwidIntegration.Common.Services;
 using EcwidIntegration.Ecwid;

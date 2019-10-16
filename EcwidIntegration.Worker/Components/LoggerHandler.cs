@@ -1,5 +1,5 @@
 ﻿using EcwidIntegration.Common.Attributes;
-using EcwidIntegration.Common.Interfaces;
+using EcwidIntegration.Common.ExtensionPoints;
 
 namespace EcwidIntegration.Worker.Components
 {
