@@ -5,6 +5,7 @@ using EcwidIntegration.Common.Services;
 using EcwidIntegration.Ecwid;
 using EcwidIntegration.Ecwid.Models;
 using EcwidIntegration.GoogleSheets;
+using EcwidIntegration.GoogleSheets.Models;
 using EcwidIntegration.Worker.CLI;
 using EcwidIntegration.Worker.Interfaces;
 using System;
@@ -82,7 +83,12 @@ namespace EcwidIntegration.Worker.Jobs
         {
             var ecwidService = new EcwidService(options.StoreId, options.EcwidAPI);
             writer.Write("Сервис Ecwid проинициализирован успешно!");
-            var googleSheetService = new GoogleSheetsService(options.SpreadSheet);
+            var googleSheetService = new SheetService(new SheetsParams
+            {
+                SheetId = options.SpreadSheet,
+                ApplicationName = "GoogleSheetsWriter_FCAA338E-426A-44CB-8474-200048847DBD",
+                CredentialsName = "credentials.json"
+            });
             writer.Write("Инициализация сервисов завершена");
             try
             {
@@ -101,7 +107,7 @@ namespace EcwidIntegration.Worker.Jobs
                         handlerService.Handle<OrderDTO>(order);
                         try
                         {
-                            googleSheetService.Write(options.TabId, GetOrders(order), options.BeginColumn);
+                            googleSheetService.Write(GetOrders(order));
                         }
                         catch (Exception e)
                         {

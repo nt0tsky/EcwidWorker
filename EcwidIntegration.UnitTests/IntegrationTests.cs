@@ -16,7 +16,12 @@ namespace EcwidIntegration.UnitTests
             var sheetName = $"TestSheet_${Guid.NewGuid()}";
 
             var ecwidService = new EcwidService(TestConstants.StoreId, TestConstants.StoreAPIKEY);
-            var googleService = new GoogleSheetsService(TestConstants.Sheet);
+            var googleService = new SheetService(new SheetParams
+            {
+                SheetId = "17jXjpfnWocXgSC6NFb8iyROs2ibQhYibu4EJC7vrJVs",
+                ApplicationName = "GoogleSheetsWriter_FCAA338E-426A-44CB-8474-200048847DBD",
+                CredentialsName = "credentials.json"
+            });
             var sheet = googleService.CreateSheet(sheetName);
             Assert.AreNotEqual(sheet, null);
             var orderNumbers = googleService.GetOrdersNumbers(sheetName);
@@ -35,10 +40,10 @@ namespace EcwidIntegration.UnitTests
                     };
                 list.AddRange(item.Items.Select(i => i.Name));
 
-                googleService.Write(sheetName, list, "B");
+                googleService.Write(list);
             }
 
-            var res = googleService.Get(sheetName, "B1", "B");
+            var res = googleService.Get(sheetName);
             Assert.AreEqual(res.Count(), 6);
             Assert.AreEqual(googleService.RemoveSheet(sheetName), true);
         }

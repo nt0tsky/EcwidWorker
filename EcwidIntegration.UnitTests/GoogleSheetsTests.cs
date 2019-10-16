@@ -9,34 +9,40 @@ namespace EcwidIntegration.UnitTests
     [TestClass]
     public class GoogleSheetsTests
     {
-        private GoogleSheetsService GetService()
+        private SheetService GetService(string tabName)
         {
-            return new GoogleSheetsService("17jXjpfnWocXgSC6NFb8iyROs2ibQhYibu4EJC7vrJVs");
+            return new SheetService(new SheetParams
+            {
+                SheetId = "17jXjpfnWocXgSC6NFb8iyROs2ibQhYibu4EJC7vrJVs",
+                ApplicationName = "GoogleSheetsWriter_FCAA338E-426A-44CB-8474-200048847DBD",
+                CredentialsName = "credentials.json",
+                TabName = tabName
+            });
         }
 
         [TestMethod]
         public void CreateAndDeleteSheet()
         {
-            var sheetName = $"Test_{Guid.NewGuid().ToString()}";
-            var service = GetService();
-            var sheet = service.CreateSheet(sheetName);
+            var tabName = $"Test_{Guid.NewGuid().ToString()}";
+            var service = GetService(tabName);
+            var sheet = service.CreateSheet(tabName);
             Assert.AreNotEqual(sheet, null);
-            var removed = service.RemoveSheet(sheetName);
+            var removed = service.RemoveSheet(tabName);
             Assert.AreEqual(removed, true);
         }
 
         [TestMethod]
         public void WriteData()
         {
-            var sheetName = $"Test_{Guid.NewGuid().ToString()}";
-            var service = GetService();
-            service.CreateSheet(sheetName);
+            var tabName = $"Test_{Guid.NewGuid().ToString()}";
+            var service = GetService(tabName);
+            service.CreateSheet(tabName);
             var list = new List<object>() { "One", "Two", "three", "four", "five", "six", "seven" };
-            var res = service.Write(sheetName, list, "B", "I");
-            var items = service.Get(sheetName, "B", "I");
+            var res = service.Write(list, tabName);
+            var items = service.Get(tabName);
             Assert.AreEqual(items.Count, 1);
             Assert.AreEqual(list.Any(i => !items[0].Contains(i)), false);
-            service.RemoveSheet(sheetName);
+            service.RemoveSheet(tabName);
         }
     }
 }
