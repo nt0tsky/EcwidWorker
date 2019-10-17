@@ -16,8 +16,8 @@ namespace EcwidIntegration.Ecwid.Interfaces
         /// <summary>
         /// Получить список новых заказов с условием отбора
         /// </summary>
-        /// <param name="condition"></param>
+        /// <param name="excludeOrders"></param>
         /// <returns></returns>
-        Task<IList<OrderDTO>> GetPaidNotShippedOrdersAsyncWithCondition(Func<OrderDTO, bool> condition);
+        Task<IList<OrderDTO>> GetPaidNotShippedOrdersAsyncWithExclude(IList<int> excludeOrders);
     }
 }

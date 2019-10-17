@@ -14,19 +14,19 @@ namespace EcwidIntegration.GoogleSheets
     {
         private SheetsService sheetsService;
         private SheetManager sheetManager;
-        private readonly SheetsParams sheetparams;
+        public SheetsParams SheetParams { get; private set; }
 
         /// <summary>
         /// Инициализация сервиса
         /// </summary>
         private SheetsService InitService()
         {
-            using (var stream = new FileStream(sheetparams.CredentialsName, FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream(SheetParams.CredentialsName, FileMode.Open, FileAccess.Read))
             {
                 return new SheetsService(new BaseClientService.Initializer()
                 {
                     HttpClientInitializer = GoogleCredential.FromStream(stream).CreateScoped(new string[] { SheetsService.Scope.Spreadsheets }),
-                    ApplicationName = sheetparams.ApplicationName
+                    ApplicationName = SheetParams.ApplicationName
                 });
             }
         }
@@ -37,8 +37,8 @@ namespace EcwidIntegration.GoogleSheets
         /// <param name="sheetparams">Объект инициализации</param>
         public SheetService(SheetsParams sheetparams)
         {
-            this.sheetparams = sheetparams;
-            this.sheetManager = new SheetManager(sheetparams, GetInstance());
+            this.SheetParams = sheetparams;
+            this.sheetManager = new SheetManager(this);
         }
 
         /// <summary>
@@ -101,30 +101,35 @@ namespace EcwidIntegration.GoogleSheets
         /// Список номеров заказов
         /// </summary>
         /// <returns></returns>
-        public IList<int> GetOrdersNumbers(string sheetName)
+        public IList<int> GetOrdersNumbers(string tabName)
         {
-            //var response = this.Get();
-            //if (response != null && response.Any())
-            //{
-            //    return response.Select(r =>
-            //    {
-            //        int order;
-            //        var orderString = r.FirstOrDefault();
-            //        if (orderString != null && int.TryParse(orderString.ToString(), out order))
-            //        {
-            //            return order;
-            //        }
+            var response = this.Get(tabName, "B1", 1);
+            if (response != null && response.Any())
+            {
+                return response.Select(r =>
+                {
+                    int order;
+                    var orderString = r.FirstOrDefault();
+                    if (orderString != null && int.TryParse(orderString.ToString(), out order))
+                    {
+                        return order;
+                    }
 
-            //        return -1;
-            //    }).Where(r => r != -1).ToList();
-            //}
+                    return -1;
+                }).Where(r => r != -1).ToList();
+            }
 
             return new List<int>();
         }
 
+        IList<IList<object>> Get(string tabName, string beginColumn, int length)
+        {
+            return this.sheetManager.Get(tabName, beginColumn, length);
+        }
+
         public IList<IList<object>> Get(string tabName, int length)
         {
-            return this.sheetManager.Get(tabName, length);
+            return this.Get(tabName, SheetsConstants.BEGIN, length);
         }
     }
 }

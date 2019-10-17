@@ -45,7 +45,12 @@ namespace EcwidIntegration.UnitTests
 
             var res = googleService.Get(sheetName, result.Count());
             Assert.AreEqual(res.Count(), 6);
+
+            var orderNumbersRes = googleService.GetOrdersNumbers(sheetName);
+            Assert.AreEqual(orderNumbersRes.Count(), 6);
             Assert.AreEqual(googleService.RemoveSheet(sheetName), true);
+
+            
         }
     }
 }

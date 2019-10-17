@@ -12,29 +12,38 @@ namespace EcwidIntegration.GoogleSheets
     /// </summary>
     public class SheetManager : ISheetManager
     {
-        private readonly SheetsParams sheetparams;
-
-        private readonly SheetsService sheetsService;
+        private readonly SheetsService googleSheetService;
+        private readonly SheetService sheetService;
 
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="sheetName">Имя вкладки</param>
-        public SheetManager(SheetsParams sheetparams, SheetsService sheetsService)
+        /// <param name="sheetService">Сервис</param>
+        public SheetManager(SheetService sheetService)
         {
-            this.sheetparams = sheetparams;
-            this.sheetsService = sheetsService;
+            this.sheetService = sheetService;
+            this.googleSheetService = sheetService.GetInstance();
+        }
+
+        /// <summary>
+        /// Получить таб по имени вкладки
+        /// </summary>
+        /// <param name="sheetName">Имя вкладки</param>
+        /// <returns>Таб</returns>
+        private Sheet GetSheet(string sheetName)
+        {
+            var info = googleSheetService.Spreadsheets.Get(this.sheetService.SheetParams.SheetId).Execute();
+            return info.Sheets.FirstOrDefault(s => s.Properties.Title == sheetName);
         }
 
         public bool Remove(string sheetName)
         {
-            var info = sheetsService.Spreadsheets.Get(this.sheetparams.SheetId).Execute();
-            var sheet4Delete = info.Sheets.FirstOrDefault(s => s.Properties.Title == sheetName);
-            if (sheet4Delete != null)
+            var sheet = GetSheet(sheetName);
+            if (sheet != null)
             {
                 var deleteSheetRequest = new DeleteSheetRequest
                 {
-                    SheetId = sheet4Delete.Properties.SheetId
+                    SheetId = sheet.Properties.SheetId
                 };
 
                 var batchRequest = new BatchUpdateSpreadsheetRequest
@@ -48,7 +57,7 @@ namespace EcwidIntegration.GoogleSheets
                     }
                 };
 
-                sheetsService.Spreadsheets.BatchUpdate(batchRequest, this.sheetparams.SheetId).Execute();
+                googleSheetService.Spreadsheets.BatchUpdate(batchRequest, this.sheetService.SheetParams.SheetId).Execute();
 
                 return true;
             }
@@ -58,8 +67,7 @@ namespace EcwidIntegration.GoogleSheets
 
         public Sheet Create(string sheetName)
         {
-            var info = sheetsService.Spreadsheets.Get(this.sheetparams.SheetId).Execute();
-            var sheet = info.Sheets.FirstOrDefault(s => s.Properties.Title == sheetName);
+            var sheet = GetSheet(sheetName);
             if (sheet == null)
             {
                 var addSheetRequest = new AddSheetRequest
@@ -80,7 +88,7 @@ namespace EcwidIntegration.GoogleSheets
                     }
                 };
 
-                sheetsService.Spreadsheets.BatchUpdate(batchRequest, this.sheetparams.SheetId).Execute();
+                googleSheetService.Spreadsheets.BatchUpdate(batchRequest, this.sheetService.SheetParams.SheetId).Execute();
                 return Create(sheetName);
             }
             return sheet;
@@ -107,16 +115,28 @@ namespace EcwidIntegration.GoogleSheets
         {
             string lastLetter = char.ConvertFromUtf32(length + 65);
             var range = $"{tabName}!{beginColumn}:{lastLetter}";
-            var request = sheetsService.Spreadsheets.Values.Get(this.sheetparams.SheetId, range);
+            var request = googleSheetService.Spreadsheets.Values.Get(this.sheetService.SheetParams.SheetId, range);
             var response = request.Execute();
             return response.Values;
         }
 
+        /// <summary>
+        /// Опубликовать запись
+        /// </summary>
+        /// <param name="data">Данные записи</param>
+        /// <returns>Результат</returns>
         public AppendValuesResponse Post(IList<object> data)
         {
             return this.Post(data, string.Empty, SheetsConstants.BEGIN);
         }
 
+        /// <summary>
+        /// Опубликовать запись
+        /// </summary>
+        /// <param name="data">Данные записи</param>
+        /// <param name="beginColumn">Начальная колонка</param>
+        /// <param name="tabName">Имя вкладки</param>
+        /// <returns>Результат</returns>
         public AppendValuesResponse Post(IList<object> data, string tabName, string beginColumn)
         {
             string lastLetter = char.ConvertFromUtf32(data.Count() + 65);
@@ -125,7 +145,7 @@ namespace EcwidIntegration.GoogleSheets
             {
                 Values = new List<IList<object>> { data }
             };
-            var request = sheetsService.Spreadsheets.Values.Append(valueRange, this.sheetparams.SheetId, range);
+            var request = googleSheetService.Spreadsheets.Values.Append(valueRange, this.sheetService.SheetParams.SheetId, range);
             request.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
             return request.Execute();
         }

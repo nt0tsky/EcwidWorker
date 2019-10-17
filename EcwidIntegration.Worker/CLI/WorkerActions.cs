@@ -12,7 +12,7 @@ namespace EcwidIntegration.Worker
     [ArgExceptionBehavior(ArgExceptionPolicy.StandardExceptionHandling)]
     internal class WorkerActions : IWorkerActions
     {
-        private readonly IWorkerService workerService = new EcwidServiceCollection(new EcwidServiceCollectionBase()).GetService<IWorkerService>();
+        private readonly IWorkerService workerService;
 
         [HelpHook, ArgShortcut("--?"), ArgDescription("Отобразить справку")]
         public bool Help { get; set; }
@@ -27,6 +27,15 @@ namespace EcwidIntegration.Worker
         public void GetEcwidOrders(EcwidOptions options)
         {
             workerService.GetEcwidOrders(options);
+        }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="workerService">Service</param>
+        public WorkerActions(IWorkerService workerService)
+        {
+            this.workerService = workerService;
         }
     }
 }

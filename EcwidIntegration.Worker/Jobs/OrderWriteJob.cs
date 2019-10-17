@@ -92,22 +92,16 @@ namespace EcwidIntegration.Worker.Jobs
             writer.Write("Инициализация сервисов завершена");
             try
             {
-                var gsheetOrders = googleSheetService.GetOrdersNumbers(options.TabId);
-                writer.Write("Получили список заказов с GoogleSheet");
-                var ecwidOrders = ecwidService.GetPaidNotShippedOrdersAsyncWithCondition(o =>
-                {
-                    return !gsheetOrders.Contains(o.OrderNumber);
-                }).Result;
-                writer.Write("Получили список заказов с Ecwid");
+                var exists = googleSheetService.GetOrdersNumbers(options.TabId);
+                var ecwidOrders = ecwidService.GetPaidNotShippedOrdersAsyncWithExclude(exists).Result;
                 if (ecwidOrders.Any())
                 {
-                    writer.Write($"Новые заказы для записи! {ecwidOrders.Count}");
                     foreach (var order in ecwidOrders.OrderBy(o => o.CreateDate))
                     {
                         handlerService.Handle<OrderDTO>(order);
                         try
                         {
-                            googleSheetService.Write(GetOrders(order));
+                            googleSheetService.Write(GetOrders(order), options.TabId, options.BeginColumn);
                         }
                         catch (Exception e)
                         {

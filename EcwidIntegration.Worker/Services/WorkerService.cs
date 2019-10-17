@@ -30,6 +30,10 @@ namespace EcwidIntegration.Worker.Services
 
         public void Start(string[] args)
         {
+            Args.RegisterFactory(typeof(WorkerActions), () =>
+            {
+                return new WorkerActions(this);
+            });
             Args.InvokeAction<WorkerActions>(args);
         }
 

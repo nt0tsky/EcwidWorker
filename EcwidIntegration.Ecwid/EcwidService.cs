@@ -67,10 +67,10 @@ namespace EcwidIntegration.Ecwid
         /// </summary>
         /// <param name="condition">Условие</param>
         /// <returns>Список заказов</returns>
-        public async Task<IList<OrderDTO>> GetPaidNotShippedOrdersAsyncWithCondition(Func<OrderDTO, bool> condition)
+        public async Task<IList<OrderDTO>> GetPaidNotShippedOrdersAsyncWithExclude(IList<int> excludeOrders)
         {
             var orders = await GetPaidNotShippedOrdersAsync();
-            return orders.Where(o => condition(o)).ToList();
+            return orders.Where(o => !excludeOrders.Contains(o.OrderNumber)).ToList();
         }
     }
 }
