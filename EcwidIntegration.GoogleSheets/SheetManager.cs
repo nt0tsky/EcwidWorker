@@ -86,23 +86,41 @@ namespace EcwidIntegration.GoogleSheets
             return sheet;
         }
 
-        public IList<IList<object>> Get(string tabName)
+        /// <summary>
+        /// Получить записи по имени вкладки
+        /// </summary>
+        /// <param name="tabName">Имя вкладки</param>
+        /// <param name="length">Количество колонок для чтения</param>
+        /// <returns>Список записей</returns>
+        public IList<IList<object>> Get(string tabName, int length)
         {
-            var range = $"{tabName}!{SheetsConstants.BEGIN}:{SheetsConstants.END}";
-            var request = sheetsService.Spreadsheets.Values.Get(this.sheetparams.TabName, range);
+            return this.Get(tabName, SheetsConstants.BEGIN, length);
+        }
+
+        /// <summary>
+        /// Получить записи по имени вкладки
+        /// </summary>
+        /// <param name="tabName">Имя вкладки</param>
+        /// <param name="length">Количество колонок для чтения</param>
+        /// <returns>Список записей</returns>
+        public IList<IList<object>> Get(string tabName, string beginColumn, int length)
+        {
+            string lastLetter = char.ConvertFromUtf32(length + 65);
+            var range = $"{tabName}!{beginColumn}:{lastLetter}";
+            var request = sheetsService.Spreadsheets.Values.Get(this.sheetparams.SheetId, range);
             var response = request.Execute();
             return response.Values;
         }
 
         public AppendValuesResponse Post(IList<object> data)
         {
-            return this.Post(data, string.Empty);
+            return this.Post(data, string.Empty, SheetsConstants.BEGIN);
         }
 
-        public AppendValuesResponse Post(IList<object> data, string tabName)
+        public AppendValuesResponse Post(IList<object> data, string tabName, string beginColumn)
         {
             string lastLetter = char.ConvertFromUtf32(data.Count() + 65);
-            var range = string.IsNullOrEmpty(tabName) ? SheetsConstants.END : $"{tabName}!{SheetsConstants.BEGIN}:{lastLetter}";
+            var range = string.IsNullOrEmpty(tabName) ? SheetsConstants.END : $"{tabName}!{beginColumn}:{lastLetter}";
             var valueRange = new ValueRange()
             {
                 Values = new List<IList<object>> { data }

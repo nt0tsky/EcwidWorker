@@ -7,7 +7,7 @@ namespace EcwidIntegration.GoogleSheets.Interfaces
     {
         AppendValuesResponse Post(IList<object> data);
 
-        IList<IList<object>> Get(string tabNAme);
+        IList<IList<object>> Get(string tabNAme, int length);
 
         Sheet Create(string sheetName);
     }

@@ -38,8 +38,8 @@ namespace EcwidIntegration.UnitTests
             var service = GetService(tabName);
             service.CreateSheet(tabName);
             var list = new List<object>() { "One", "Two", "three", "four", "five", "six", "seven" };
-            var res = service.Write(list, tabName);
-            var items = service.Get(tabName);
+            var res = service.Write(list, tabName, "B1");
+            var items = service.Get(tabName, list.Count());
             Assert.AreEqual(items.Count, 1);
             Assert.AreEqual(list.Any(i => !items[0].Contains(i)), false);
             service.RemoveSheet(tabName);

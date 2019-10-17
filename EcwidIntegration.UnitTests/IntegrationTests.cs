@@ -40,10 +40,10 @@ namespace EcwidIntegration.UnitTests
                     };
                 list.AddRange(item.Items.Select(i => i.Name));
 
-                googleService.Write(list);
+                googleService.Write(list, sheetName, "B1");
             }
 
-            var res = googleService.Get(sheetName);
+            var res = googleService.Get(sheetName, result.Count());
             Assert.AreEqual(res.Count(), 6);
             Assert.AreEqual(googleService.RemoveSheet(sheetName), true);
         }

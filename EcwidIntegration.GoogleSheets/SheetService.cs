@@ -72,9 +72,9 @@ namespace EcwidIntegration.GoogleSheets
         /// <param name="data">Данные для записи</param>
         /// <param name="startColumn">Начальная колонка</param>
         /// <returns>Результат записи</returns>
-        public object Write(IList<object> data, string sheetName)
+        public object Write(IList<object> data, string sheetName, string beginColumn)
         {
-            return this.sheetManager.Post(data, sheetName);
+            return this.sheetManager.Post(data, sheetName, beginColumn);
         }
 
         /// <summary>
@@ -122,9 +122,9 @@ namespace EcwidIntegration.GoogleSheets
             return new List<int>();
         }
 
-        public IList<IList<object>> Get(string tabName)
+        public IList<IList<object>> Get(string tabName, int length)
         {
-            return this.sheetManager.Get(tabName);
+            return this.sheetManager.Get(tabName, length);
         }
     }
 }
