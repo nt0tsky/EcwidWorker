@@ -1,9 +1,10 @@
-﻿using EcwidIntegration.Worker.CLI;
+﻿using System.Threading.Tasks;
+using EcwidIntegration.Worker.CLI;
 
 namespace EcwidIntegration.Worker.Jobs
 {
     internal interface IWriteJob
     {
-        void Execute(RunOptions options);
+        Task Execute(RunOptions options);
     }
 }

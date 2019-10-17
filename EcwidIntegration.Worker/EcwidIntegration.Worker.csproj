@@ -9,6 +9,8 @@
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NLog" Version="4.6.7" />
+    <PackageReference Include="NLog.Config" Version="4.6.7" />
     <PackageReference Include="PowerArgs" Version="3.6.0" />
   </ItemGroup>
 
@@ -16,6 +18,12 @@
     <ProjectReference Include="..\EcwidIntegration.Common\EcwidIntegration.Common.csproj" />
     <ProjectReference Include="..\EcwidIntegration.Ecwid\EcwidIntegration.Ecwid.csproj" />
     <ProjectReference Include="..\EcwidIntegration.GoogleSheets\EcwidIntegration.GoogleSheets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="C:\Users\nt0tsky\.nuget\packages\nlog.config\4.6.7\contentFiles\any\any\NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

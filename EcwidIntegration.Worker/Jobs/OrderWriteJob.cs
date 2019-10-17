@@ -7,17 +7,21 @@ using EcwidIntegration.Ecwid.Models;
 using EcwidIntegration.GoogleSheets;
 using EcwidIntegration.GoogleSheets.Models;
 using EcwidIntegration.Worker.CLI;
+using EcwidIntegration.Worker.Components;
 using EcwidIntegration.Worker.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EcwidIntegration.Worker.Jobs
 {
     [Service]
     internal class OrderWriteJob : IWriteJob, IService
     {
+        private EcwidService ecwidService;
+        private SheetService sheetService;
         private readonly IWriter writer;
         private readonly IHandlerService handlerService;
 
@@ -45,6 +49,31 @@ namespace EcwidIntegration.Worker.Jobs
             }
 
             return list;
+        }
+
+        private EcwidService GetEcwidService(RunOptions options)
+        {
+            if (this.ecwidService == null)
+            {
+                this.ecwidService = new EcwidService(options.StoreId, options.EcwidAPI);
+            }
+
+            return this.ecwidService;
+        }
+
+        private SheetService GetSheetService(RunOptions options)
+        {
+            if (this.sheetService == null)
+            {
+                this.sheetService = new SheetService(new SheetsParams
+                {
+                    SheetId = options.SpreadSheet,
+                    ApplicationName = "GoogleSheetsWriter_FCAA338E-426A-44CB-8474-200048847DBD",
+                    CredentialsName = "credentials.json"
+                });
+            }
+
+            return this.sheetService;
         }
 
         /// <summary>
@@ -75,25 +104,18 @@ namespace EcwidIntegration.Worker.Jobs
         /// </summary>
         public OrderWriteJob(IHandlerService handlerService)
         {
-            writer = new ConsoleWriter();
+            writer = new LoggerWriter();
             this.handlerService = handlerService;
         }
 
-        public void Execute(RunOptions options)
+        public async Task Execute(RunOptions options)
         {
-            var ecwidService = new EcwidService(options.StoreId, options.EcwidAPI);
-            writer.Write("Сервис Ecwid проинициализирован успешно!");
-            var googleSheetService = new SheetService(new SheetsParams
-            {
-                SheetId = options.SpreadSheet,
-                ApplicationName = "GoogleSheetsWriter_FCAA338E-426A-44CB-8474-200048847DBD",
-                CredentialsName = "credentials.json"
-            });
-            writer.Write("Инициализация сервисов завершена");
+            var ecwidService = GetEcwidService(options);
+            var sheetService = GetSheetService(options);
             try
             {
-                var exists = googleSheetService.GetOrdersNumbers(options.TabId);
-                var ecwidOrders = ecwidService.GetPaidNotShippedOrdersAsyncWithExclude(exists).Result;
+                var exists = sheetService.GetOrdersNumbers(options.TabId);
+                var ecwidOrders = await ecwidService.GetPaidNotShippedOrdersAsyncWithExclude(exists);
                 if (ecwidOrders.Any())
                 {
                     foreach (var order in ecwidOrders.OrderBy(o => o.CreateDate))
@@ -101,7 +123,7 @@ namespace EcwidIntegration.Worker.Jobs
                         handlerService.Handle<OrderDTO>(order);
                         try
                         {
-                            googleSheetService.Write(GetOrders(order), options.TabId, options.BeginColumn);
+                            sheetService.Write(GetOrders(order), options.TabId, options.BeginColumn);
                         }
                         catch (Exception e)
                         {
