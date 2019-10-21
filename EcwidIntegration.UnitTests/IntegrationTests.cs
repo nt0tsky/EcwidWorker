@@ -18,7 +18,7 @@ namespace EcwidIntegration.UnitTests
             var ecwidService = new EcwidService(TestConstants.StoreId, TestConstants.StoreAPIKEY);
             var googleService = new SheetService(new SheetParams
             {
-                SheetId = "17jXjpfnWocXgSC6NFb8iyROs2ibQhYibu4EJC7vrJVs",
+                SheetId = "19fNPnbkQ6pOw2_DzVbHTkAmZcDZRp3lk1id60LO1hSk",
                 ApplicationName = "GoogleSheetsWriter_FCAA338E-426A-44CB-8474-200048847DBD",
                 CredentialsName = "credentials.json"
             });
@@ -40,7 +40,7 @@ namespace EcwidIntegration.UnitTests
                     };
                 list.AddRange(item.Items.Select(i => i.Name));
 
-                googleService.Write(list, sheetName, "B1");
+                googleService.Write(list, sheetName, "B");
             }
 
             var res = googleService.Get(sheetName, result.Count());

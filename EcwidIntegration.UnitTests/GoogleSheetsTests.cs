@@ -13,7 +13,7 @@ namespace EcwidIntegration.UnitTests
         {
             return new SheetService(new SheetParams
             {
-                SheetId = "17jXjpfnWocXgSC6NFb8iyROs2ibQhYibu4EJC7vrJVs",
+                SheetId = "19fNPnbkQ6pOw2_DzVbHTkAmZcDZRp3lk1id60LO1hSk",
                 ApplicationName = "GoogleSheetsWriter_FCAA338E-426A-44CB-8474-200048847DBD",
                 CredentialsName = "credentials.json",
                 TabName = tabName
@@ -38,7 +38,7 @@ namespace EcwidIntegration.UnitTests
             var service = GetService(tabName);
             service.CreateSheet(tabName);
             var list = new List<object>() { "One", "Two", "three", "four", "five", "six", "seven" };
-            var res = service.Write(list, tabName, "B1");
+            var res = service.Write(list, tabName, "B");
             var items = service.Get(tabName, list.Count());
             Assert.AreEqual(items.Count, 1);
             Assert.AreEqual(list.Any(i => !items[0].Contains(i)), false);

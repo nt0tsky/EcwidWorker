@@ -106,6 +106,15 @@ namespace EcwidIntegration.GoogleSheets
         }
 
         /// <summary>
+        /// Количество записей в документе
+        /// </summary>
+        /// <returns></returns>
+        public long GetRowsCount()
+        {
+            return this.googleSheetService.Spreadsheets.Values.Get(this.sheetService.SheetParams.SheetId, "A1:B").Execute().Values.Count;
+        }
+
+        /// <summary>
         /// Получить записи по имени вкладки
         /// </summary>
         /// <param name="tabName">Имя вкладки</param>
@@ -140,7 +149,8 @@ namespace EcwidIntegration.GoogleSheets
         public AppendValuesResponse Post(IList<object> data, string tabName, string beginColumn)
         {
             string lastLetter = char.ConvertFromUtf32(data.Count() + 65);
-            var range = string.IsNullOrEmpty(tabName) ? SheetsConstants.END : $"{tabName}!{beginColumn}:{lastLetter}";
+            var rowsCount = GetRowsCount();
+            var range = string.IsNullOrEmpty(tabName) ? SheetsConstants.END : $"{beginColumn}{++rowsCount}:{lastLetter}";
             var valueRange = new ValueRange()
             {
                 Values = new List<IList<object>> { data }
